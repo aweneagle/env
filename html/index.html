@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <script type="text/javascript" src="/js/multi_images.js"></script>
+        <script type="text/javascript" src="/js/jquery-1.11.0.min.js"></script>
+        <script>
+            $(function(){
+                Dropzone.autoDiscover = false;
+                $("#upload").dropzone({
+                    url:"/services/upload_images"
+                });
+            });
+        </script>
+    <body>
+        <form id="upload" style="height:100px; width:100px; border:1px solid;" action="/services/upload_images">
+        </form>
+    </body>
+</html>

@@ -462,7 +462,9 @@ class EnvUriRouter implements IUriRouter{
 		} else if (is_string($result))  {
 			$env->web->set(0, $result);
 
-		} else {
+		} else if ($result == null){
+            /* do nothing */
+        } else {
 			$env->assert(false, "query got a wrong return value, path=".$path);
 		}
 
