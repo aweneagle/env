@@ -13,9 +13,6 @@ interface IEnv {
 	 */
 	public function load($io_config);
 	public function all_io();
-	public function __get($name);
-	public function __set($name, $value);
-
 
 	public function set_uri_router(IUriRouter $uri_router);
 	public function set_err_handler(IErrHandler $err_handler);
@@ -99,6 +96,7 @@ interface IBuffer {
 /**********************************  classes ********************************/
 
 class Env implements IEnv, IErrHandler, IClassLoader, IUriRouter {
+    public $root = __DIR__ ;
 	private $uri_router ;
 	private $err_handler;
 	private $class_loader;
@@ -188,7 +186,7 @@ class Env implements IEnv, IErrHandler, IClassLoader, IUriRouter {
 		try {
 			$this->uri_router->request($uri);
 		}catch(Exception $e){
-			;
+			$this->stderr->log($e->getMessage());
 		}
 	}
 
@@ -288,7 +286,7 @@ class EnvStdErr implements ILog{
 
 class EnvErrHandler implements IErrHandler, IPhpErrHandler {
 	private $env = null;
-	private $halt_style = self::HALT_STYLE_DIE;
+	private $halt_style = self::HALT_STYLE_EXCEPTION;
 	private $err_out_type = self::ERR_OUT_ALL;
 
 	public function __construct(IEnv $env){
@@ -449,9 +447,10 @@ class EnvUriRouter implements IUriRouter{
 			$env->web = new EnvWeb();
 		}
 
+
 		$env->web->output_format = $output_format;
-		if ($env->web->output_format == 'html'){
-			$env->web->output_tpl = $path . ".html";
+		if ($env->web->output_format == 'shtml'){
+			$env->web->output_tpl = $env->root . '/html/'.$match['act'] . ".html";
 		}
 		$env->web->input_format = $input_format;
 		$result = $env->query($path, $env->web->all());
@@ -564,8 +563,9 @@ class EnvWeb implements IBuffer, IHashOutput, IPregInput{
 	private $output = array();
 	private $input_list = array();
 
-	public $output_format = 'json';
-	public $output_tpl = null;	/* $output_tpl should be not null when $output_format == 'html' */
+	private $output_format = 'json';
+	private $output_tpl = null;	/* $output_tpl should be not null when $output_format == 'html' */
+    private $smarty = null;
 
 	private $input_format = 'txt';
 
@@ -583,13 +583,38 @@ class EnvWeb implements IBuffer, IHashOutput, IPregInput{
 		if ($name == 'input_format'){
 			$this->input_list['phpinput'] = new EnvPhpInput($this->input_format);
 		}
+
+        if ($name == 'output_format') {
+            $this->set_output_format($value);
+        }
 	}
+
+    private function set_output_format($format, $options=array()){
+        $this->output_format = $format;
+        switch ($format) {
+            case 'shtml':
+                if (isset($options['tpl_file'])) {
+                    $this->output_tpl = $options['tpl_file'];
+                }
+                if (!$this->smarty) {
+                    if (!class_exists('Smarty')) {
+                        include __DIR__ . "/smarty/libs/Smarty.class.php";
+                    }
+                    $this->smarty = new Smarty();
+                    $this->smarty->left_delimiter = "<{";
+                    $this->smarty->right_delimiter = "}>";
+                    $this->smarty->setCompileDir(__DIR__ . "/smarty_compile");
+                }
+                break;
+
+            default:
+                break;
+                
+        }
+    }
 
 	public function __get($name){
 		switch ($name) {
-		case 'input_format':
-			return $this->input_format;
-			break;
 
 		case 'get':
 		case 'post':
@@ -601,7 +626,7 @@ class EnvWeb implements IBuffer, IHashOutput, IPregInput{
 			break;
 
 		default:
-			return false;
+			return $this->$name;
 		}
 	}
 
@@ -643,8 +668,10 @@ class EnvWeb implements IBuffer, IHashOutput, IPregInput{
 			echo toxml($this->output);
 			break;
 
-		case 'html':
-			echo tohtml($this->output, $this->output_tpl);
+		case 'shtml':
+            header("Content-Type: text/html;charset=utf-8");
+            $this->smarty->assign('doc', $this->output);
+			echo $this->smarty->fetch($this->output_tpl);
 			break;
 
 		default:
