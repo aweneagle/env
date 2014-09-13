@@ -1,5 +1,5 @@
 <?php
-	interface ihttp {
+	interface icurl {
 
 		/* send request and fetch response 
 		 *
@@ -8,7 +8,7 @@
 		 *
 		 * @return  string
 		 */
-		public function request($uri, $params);
+		public function request($uri, array $params = array());
 
 
 		/* set host

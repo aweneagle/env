@@ -3,10 +3,14 @@
 
 
 		/* ==================================
-		 * configure  an io source 
+		 * configure  io sources
 		 * ==================================
 		 */
 		private $src = array();
+
+		public function __construct(){
+			$this->src['caller'] = new \env\caller\default;
+		}
 
 		public function __get($name){
 			if (!isset($this->src[$name])) {
@@ -51,6 +55,15 @@
 
 		public function env_all_names(){
 			return array_keys(self::$env_list);
+		}
+
+
+		/* ==================================
+		 * call a module
+                 * ==================================
+                 */
+		public function call($script_filename, array $params=array()) {
+			$this->src['caller']->call($script_filename, $params);
 		}
 	}
 

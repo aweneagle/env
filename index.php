@@ -8,16 +8,38 @@
 	env()->root = __DIR__;
 
 	env()->db0 = new \env\db\mysql_pdo("127.0.0.1", 3306);
-	env()->db1 = new \env\db\mysql_pdo("127.0.0.1", 3306);
+	//env()->db0 = new \env\db\mysqli("127.0.0.1", 3306);
+	//env()->db0 = new \env\db\csvdb("/data/csv");
 
 	env()->cache0 = new \env\hash\memcached("127.0.0.1", 3307);
-	env()->cache1 = new \env\hash\memcached("127.0.0.1", 3307);
+	//env()->cache0 = new \env\hash\redis("127.0.0.1", 3307);
+	//env()->cache0 = new \env\hash\shm(0x11111, 0666);
+
+	env()->stack0 = new \env\stack\redis("127.0.0.1", 3307, "message");
+	//env()->stack0 = new \env\stack\shm(0x11111, 0666);
+	//env()->stack0 = new \env\stack\file("/tmp/stackfile");
 
 	env()->queue0 = new \env\queue\redis("127.0.0.1", 3307, "message");
-	env()->queue1 = new \env\queue\redis("127.0.0.1", 3307, "list");
+	//env()->queue0 = new \env\queue\sockpipe("/tmp/pipe");
+	//env()->queue0 = new \env\queue\file("/tmp/pipefile");
 
-	env()->stderr = new \env\log\file("/tmp/env.error");
-	env()->log = new \env\log\file("/tmp/env.log");
+	env()->msg_queue = array(
+		"chat" => new \env\queue\redis("127.0.0.1", 3307, "chat"),
+		"message" => new \env\queue\redis("127.0.0.1", 3307, "message")
+	);
+
+	env()->stderr = new \env\stream\logfile("/tmp/env.error");
+	//env()->stderr = new \env\stream\sockudp("127.0.0.1:9009");
+	//env()->stderr = new \env\stream\websocket("127.0.0.1:9090");
+
+	env()->pear_host0 = new \env\curl\websocket("127.0.0.1", 9999);
+	//env()->pear_host0 = new \env\curl\http("127.0.0.1", 8800);
+	//env()->pear_host0 = new \env\curl\fastcgi("127.0.0.1", 9000);
+	//env()->pear_host0 = new \env\curl\mytcp("127.0.0.1", 1234);
+
+	env()->pear_host1 = new \env\client\mytcp("127.0.0.1", 1234);
+	//env()->pear_host1 = new \env\client\websocket("127.0.0.1", 8080);
+	//env()->pear_host1 = new \env\client\fastcgi("127.0.0.1", 9000);
 
 
 
@@ -26,35 +48,35 @@
 	 *************************/
 
 	if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-		env()->stdin = new \env\read\post();
+		env()->stdin = new \env\hash\post();
 
 	} else if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-		env()->stdin = new \env\read\get();
+		env()->stdin = new \env\hash\get();
 
 	} else {
-		env()->stdin = new \env\read\console();
+		env()->stdin = new \env\hash\console();
 	}
 
 
 	/**************************
 	 * explain uri 
 	 * ***********************/
-	env()->router = new \env\router\object();
+	env()->router = new \env\router\default();
 
 	env()->router->explain($_SERVER['REQUEST_URI'], $output, $scrip_filename);
 
 	switch ($output) {
 	case 'xml':
-		env()->stdout = new \env\write\xml();
+		env()->stdout = new \env\stream\xml();
 		break;
 
 	case 'json':
-		env()->stdout = new \env\write\json();
+		env()->stdout = new \env\stream\json();
 		break;
 
 	case 'html':
 	case 'php' :
-		env()->stdout = new \env\write\html($script_filename . ".html");
+		env()->stdout = new \env\stream\html($script_filename . ".html");
 		break;
 	}
 
@@ -63,13 +85,19 @@
 	/****************************
 	 * call modules
 	 * *************************/
-	env()->caller = new \env\caller\func();
+	env()->caller = new \env\caller\object();
+	//env()->caller = new \env\caller\function();
+	//env()->caller = new \env\caller\script();
 
 	try {
-		$output = env()->caller->run($script_info['script_filename'], env()->stdin->read());
+		/* 
+		 *  env()->call()   equals   env()->caller->call()
+		 */
+		$output = env()->call($script_info['script_filename'], env()->stdin->all());
+		//$output = env()->caller->call($script_info['script_filename'], env()->stdin->all());
 
 	} catch (Exception $e){
-		env()->stderr->log($e->getMessage());
+		env()->stderr->write($e->getMessage());
 	}
 
 
@@ -82,30 +110,33 @@
 
 
 
-
-
 	class example {
 		public function run($req){
 			$name = $req['name'];
 
-			env()->db0->query("select * form user", $name);
-			env()->db0->get_value("select * from user where name=?", $name, $name);
+			$info = array();
+			foreach (env()->db0->query("select * form user where name=?", $name) as $row) {
+				$info['age'] = $row['age'];
+				$info['sex'] = $row['sex'];
+				$info['hometown'] = $row['hometown'];
+			}
+			$age = env()->db0->get_value("select age from user where name=?", $name);
 
-			env()->cache0->set("myname", $name);
-			env()->cache1->set("yourname", $name+1);
+			env()->cache0->set($name, $info);
+			env()->cache0->expired($name, 9000); 	/* after 9000 seconds , value will be expired */
 
-			$message = env()->queue0->pop();
+			env()->msg_queue['info']->push(array("visitor"=>$name, "info"=>$info));
+			$message = env()->msg_queue['message']->pop();
+			$chat = env()->msg_queue['chat']->pop();
 
-			$name += 1;
-			return array('name'=>$name, 'msg'=>$message);
+			return array('name'=>$name, 'msg'=>$message, 'chat'=>$chat, 'info'=>$info);
 		}
 	}
 
 
 	class register {
 		public function run(){
-			$output = env()->caller->run('/example', array('name'=>'sky'));
-			return $output;
+			return env()->caller->call('/module/example.php', array('name'=>'sky'));
 		}
 	}
 

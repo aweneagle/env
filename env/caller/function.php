@@ -5,9 +5,9 @@
 		/* call a module
 		 *
 		 * @param	script_filename, string
-		 * @param	params,	array
+		 * @param	params,	string or array
 		 *
-		 * @return	array
+		 * @return	string or array
 		 */
 		public function call($script_filename, array $params = array());
 	}
