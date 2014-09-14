@@ -9,7 +9,7 @@
 		 *
 		 * @return	always true	
 		 */
-		public function explain($uri, $script_filename, $output_format);
+		public function explain($uri, &$script_filename, &$output_format);
 
 
 	}

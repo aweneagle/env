@@ -67,16 +67,16 @@
 
 	switch ($output) {
 	case 'xml':
-		env()->stdout = new \env\stream\xml();
+		env()->stdout = new \env\stream\echo_output("xml");
 		break;
 
 	case 'json':
-		env()->stdout = new \env\stream\json();
+		env()->stdout = new \env\stream\echo_output("json");
 		break;
 
 	case 'html':
 	case 'php' :
-		env()->stdout = new \env\stream\html($script_filename . ".html");
+		env()->stdout = new \env\stream\smarty(substr($script_filename, 0, - strlen(".php")) . ".html");
 		break;
 	}
 
@@ -85,7 +85,7 @@
 	/****************************
 	 * call modules
 	 * *************************/
-	env()->caller = new \env\caller\object();
+	env()->caller = new \env\caller\obj();
 	//env()->caller = new \env\caller\function();
 	//env()->caller = new \env\caller\script();
 
