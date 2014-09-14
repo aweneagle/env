@@ -1,7 +1,7 @@
 <?php
 	namespace \env\hash;
 
-	class cookie implements \env\ihash {
+	class cookie implements \env\hash\ihash {
 
 
 		public function get($name){

@@ -1,4 +1,5 @@
 <?php
+	namespace \env\client;
 	interface iclient {
 
 		const ERR_AGAIN = 1;				//when non_blocking, it mean's "try again"
