@@ -45,23 +45,23 @@
 		/* global environment object list */
 		private static $env_list = array();
 
-		public static function env_exists($env_name){
+		public static function exists($env_name){
 			return isset(self::$env_list[$env_name]);
 		}
 
-		public static function env_ini($env_name){
+		public static function init($env_name){
 			self::$env_list[$env_name] = new self;
 			return true;
 		}
 
-		public static function env_get($env_name){
-			if (!self::env_exists($env_name)) {
-				self::env_ini($env_name);
+		public static function get($env_name){
+			if (!self::exists($env_name)) {
+				self::init($env_name);
 			}
 			return self::$env_list[$env_name];
 		}
 
-		public static function env_all_names(){
+		public static function all_names(){
 			return array_keys(self::$env_list);
 		}
 
@@ -79,7 +79,7 @@
 
 	function env($env_name = null) {
 		if ($env_name === null) {
-			return Env::env_get('DEFAULT');
+			return Env::get('DEFAULT');
 		}
-		return Env::env_get($env_name);
+		return Env::get($env_name);
 	}

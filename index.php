@@ -1,6 +1,5 @@
 <?php
 
-
 	/***********************
 	 * configure 
 	 **************************/
@@ -21,7 +20,6 @@
 	//env()->queue0 = new \env\queue\redis("127.0.0.1", 3307, "message");
 	//env()->queue0 = new \env\queue\sockpipe("/tmp/pipe");
 	//env()->queue0 = new \env\queue\file("/tmp/pipefile");
-
 
 
 	/**************************

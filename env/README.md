@@ -6,8 +6,6 @@
  <?php 
      // before any operations on env(), you should include the env.php , and init it's root dir
      require __DIR__ . "/env/env.php";
-     env()->root = __DIR__;
-     
      //now do anything you like .....
 
 ?>
@@ -16,13 +14,13 @@
     as you can see, there are many subdirs in env/ , like 'curl', 'hash', 'queue', 'stack', ...., so where did they come from ? 
     the answer is: "whenever an new "data operation behavior" turns out, a new dir with a stable interface is added "
 
-    curl is for   "request a server, and then fetch the response"
+    curl is for   "requesting a server, and then fetch the response"
     queue is for  "pushing a data, shifting a data, (first-in-first-out)"
     stack is for  "pushing a data, poping a data,  (first-in-last-out)"
-    hash is for   "get/set value by a key"
-    stream is for "simply read in and write in"
+    hash is for   "getting/setting value by a key"
+    stream is for "writing something into somewhere"
     db is for     "quering from a database"
-    client is for "connect to a server, do 'request-response' for servaler times if needed, and then close"
+    client is for "connectting to a server, do 'request-response' for several times if needed, and then close"
     
     router is for "explain a uri, and get script_filename, output_format from it"
     caller is for "load module from script_filename, and pass params to it, and fetch result from it "
@@ -49,7 +47,7 @@
 4.  developing a new lib class
     when you want to develop a new lib class, the rule's simple:
       1. implements the interface in the lib dir
-      2. only methods of the interface should be public, exception __construct()
+      2. only methods of the interface should be public, except __construct()
       3. only methods should be public ( it means no public attributes, no __get(), __set() to access private attributes)
 
     forexample, when a new curl class is wrote out, it should be like this:
