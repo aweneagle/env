@@ -45,6 +45,16 @@
 		/* global environment object list */
 		private static $env_list = array();
 
+		private static $curr_env = 'DEFAULT';
+
+		public static function set_curr($env_name){
+			self::$curr_env = $env_name;
+		}
+
+		public static function curr(){
+			return self::get(self::$curr_env);
+		}
+
 		public static function exists($env_name){
 			return isset(self::$env_list[$env_name]);
 		}
@@ -79,7 +89,11 @@
 
 	function env($env_name = null) {
 		if ($env_name === null) {
-			return Env::get('DEFAULT');
+			return Env::curr();
 		}
 		return Env::get($env_name);
+	}
+
+	function set_curr_env($env_name){
+		Env::set_curr($env_name);
 	}
