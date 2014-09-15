@@ -1,9 +1,14 @@
 <?php
-	namespace \env\stream;
+	namespace env\stream;
 	class smarty implements \env\stream\istream {
 		private $tpl = null;
-		public function __construct($tpl) {
+		private $tpl_dir = null;
+		public function __construct($tpl, $tpl_dir = null) {
 			$this->tpl = $tpl;
+			if (!$tpl_dir) {
+				$tpl_dir = ENV_ROOT . "/view/";
+			}
+			$this->tpl_dir = $tpl_dir;
 		}
 
 		/* write in data 
@@ -13,14 +18,18 @@
 		 * @return 	always true 
 		 */
 		public function write($data){
-			if (!is_array($data) || !is_string($data)) {
-				throw new Exception("smarty::write()");
+			if (!is_array($data) && !is_string($data)) {
+				throw new \Exception("smarty::write()");
 			}
-			$smarty = new Smarty();
+			if (!class_exists("\\Smarty")) {
+				require ENV_ROOT . "/env/smarty/libs/Smarty.class.php";
+			}
+			$smarty = new \Smarty();
 			if (!is_array($data)) {
 				$data = array($data);
 			}
-			$smarty->display($this->tpl, $data);
+			$smarty->assign($data);
+			$smarty->display($this->tpl_dir . "/" . $this->tpl);
 		}
 
 

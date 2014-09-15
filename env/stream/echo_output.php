@@ -1,12 +1,12 @@
 <?php
-	namespace \env\stream;
+	namespace env\stream;
 	class echo_output implements \env\stream\istream {
 		private $output_format;
 
 		public function __construct($output_format){
-			$class = "\env\stream\echo_format_$output_format";
+			$class = "\\env\\stream\\echo_format_".$output_format;
 			if (!class_exists($class)) {
-				throw new Exception("echo_format::__construct($output_format)");
+				throw new \Exception("echo_format::__construct($output_format)");
 			}
 			$this->output_format = $output_format;	
 		}
@@ -18,10 +18,11 @@
 		 * @return 	always true 
 		 */
 		public function write($data){
-			if (!is_array($data) || !is_string($data)) {
-				throw new Exception("post::write($data)");
+			if (!is_array($data) && !is_string($data)) {
+				throw new \Exception("post::write($data)");
 			}
-			$obj = new "\env\stream\echo_format_$output_format";
+			$class = "\\env\\stream\\echo_format_".$this->output_format;
+			$obj = new $class;
 			if (is_array($data)) {
 				echo $obj->translate_array($data);
 			} else {

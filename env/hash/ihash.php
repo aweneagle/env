@@ -1,4 +1,5 @@
 <?php
+	namespace env\hash;
 	interface ihash {
 
 		/* get value 
@@ -27,6 +28,12 @@
 		 * @return true or false
 		 */
 		public function exists($key);
+
+
+		/* get all values 
+		 *
+		 */
+		public function all();
 
 	}
 

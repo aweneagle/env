@@ -1,12 +1,12 @@
 <?php
-	namespace \env\db\mysql_pdo;
+	namespace env\db;
 	class mysql_pdo implements \env\db\idb {
 
 		private $conn = null;
 		private $in_transaction = false;
 
 		public function __construct($host, $port, $user, $passwd, $dbname, $pconn=false){
-			$this->conn = new PDO("mysql:dbname=$dbname;host=$host;port=".intval($port).";", $user, $passwd);
+			$this->conn = new \PDO("mysql:dbname=$dbname;host=$host;port=".intval($port).";", $user, $passwd);
 		}
 
 		/*	db query , optional params
@@ -23,7 +23,7 @@
 			if (!$st->execute($params)) {
 				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".$st->getLastError());
 			}
-			return $st->fetchAll(PDO::FETCH_ASOCC);
+			return $st->fetchAll(\PDO::FETCH_ASSOC);
 		}
 
 		private function exception($errmsg){
@@ -31,7 +31,7 @@
 				$this->conn->rollBack();
 				$this->in_transaction = false;
 			}
-			throw new Exception($errmsg);
+			throw new \Exception($errmsg);
 		}
 
 

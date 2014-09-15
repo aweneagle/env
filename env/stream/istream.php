@@ -1,4 +1,5 @@
 <?php
+	namespace env\stream;
 	interface istream {
 
 		/* write in data 

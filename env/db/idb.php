@@ -1,4 +1,5 @@
 <?php
+	namespace env\db;
 	interface idb {
 
 		/*	db query , optional params

@@ -1,4 +1,13 @@
 <?php
+	define("ENV_ROOT", dirname(__DIR__));
+
+	function __autoload($class_name) {
+		$file_path = ENV_ROOT . "/".str_replace("\\", "/", $class_name).".php";
+		if (file_exists($file_path)) {
+			require($file_path);
+		}
+	}
+
 	class Env {
 
 
@@ -9,7 +18,6 @@
 		private $src = array();
 
 		public function __construct(){
-			$this->src['caller'] = new \env\caller\default;
 		}
 
 		public function __get($name){
@@ -63,7 +71,7 @@
                  * ==================================
                  */
 		public function call($script_filename, array $params=array()) {
-			$this->src['caller']->call($script_filename, $params);
+			return $this->src['caller']->call($script_filename, $params);
 		}
 	}
 

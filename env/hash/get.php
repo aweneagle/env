@@ -1,7 +1,7 @@
 <?php
-	namespace \env\hash;
+	namespace env\hash;
 
-	class get implements \env\ihash {
+	class get implements \env\hash\ihash {
 
 
 		public function get($name){
@@ -25,6 +25,10 @@
 
 		public function delete($key){
 			unset($_GET[$key]);
+		}
+
+		public function all(){
+			return $_GET;
 		}
 
 	}
