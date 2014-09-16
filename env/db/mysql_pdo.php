@@ -18,10 +18,10 @@
 		 */
 		public function query($sql, array $params=array()){
 			if (!$st = $this->conn->prepare($sql)) {
-				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".$this->conn->getLastError().",errno=".$this->conn->getLastErrno());
+				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".implode("|",$this->conn->errorInfo()).",errno=".$this->conn->errorCode());
 			}
 			if (!$st->execute($params)) {
-				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".$st->getLastError());
+				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".implode("|", $st->errorInfo()).",errno=".$st->errorCode());
 			}
 			return $st->fetchAll(\PDO::FETCH_ASSOC);
 		}
@@ -59,7 +59,10 @@
 		 */
 		public function start_transaction(){
 			$this->in_transaction = true;
-			$this->conn->startTransaction();
+			if (!$this->conn->beginTransaction()) {
+				throw new Exception("mysql_pdo::start_transaction(".implode("|", $this->conn->errorInfo()).")");
+			}
+			return true;
 		}
 
 
@@ -68,7 +71,23 @@
 		 * @return  always true
 		 */
 		public function commit(){
-			$this->conn->commit();
+			if (!$this->conn->commit()) {
+				throw new Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
+			}
 			$this->in_transaction = false;
+			return true;
+		}
+
+
+		/* rollback transaction
+		 *
+		 * @return	always true
+		 */
+		public function rollback(){
+			if (!$this->conn->rollBack()) {
+				throw new Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
+			}
+			$this->in_transaction = false;
+			return true;
 		}
 	}

@@ -36,4 +36,11 @@
 		public function commit();
 
 
+		/* roll back transaction 
+		 *
+		 * @return	always true
+		 */
+		public function rollback();
+
+
 	}

@@ -15,7 +15,7 @@
 		}
 
 
-		public function set($name, $value){
+		public function set($name, $value, $expired=0){
 			$_SESSION[$name] = $value;
 		}
 

@@ -15,10 +15,11 @@
 		 *
 		 * @param key, string
 		 * @param value, mixed
+		 * @param expired, int, expired time in seconds, 0 means never expired
 		 *
 		 * @return always true
 		 */
-		public function set($key, $val);
+		public function set($key, $val, $expired=0);
 
 
 		/* key exists 

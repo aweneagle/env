@@ -12,9 +12,10 @@
 		}
 
 
-		public function set($name, $value){
+		public function set($name, $value, $expired=0){
 			$_COOKIE[$name] = $value;
-			if (setcookie($name, $value)) {
+			$expired += time();
+			if (setcookie($name, $value, $expired)) {
 				return true;
 			}
 			throw new \Exception("cookie::set($name,$value)");

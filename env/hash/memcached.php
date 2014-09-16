@@ -32,8 +32,11 @@
 		 *
 		 * @return always true
 		 */
-		public function set($key, $value){
-			return $this->conn->set($key, $value);
+		public function set($key, $value, $expired=0){
+			if ($expired > 60*60*24*30) {
+				$expired += time() ;
+			}
+			return $this->conn->set($key, $value, $expired);
 		}
 
 		/* key exists 

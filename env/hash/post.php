@@ -12,7 +12,7 @@
 		}
 
 
-		public function set($name, $value){
+		public function set($name, $value, $expired=0){
 			$_POST[$name] = $value;
 			return true;
 		}
