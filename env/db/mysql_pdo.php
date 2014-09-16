@@ -60,7 +60,7 @@
 		public function start_transaction(){
 			$this->in_transaction = true;
 			if (!$this->conn->beginTransaction()) {
-				throw \Exception("mysql_pdo::start_transaction(".implode("|", $this->conn->errorInfo()).")");
+				throw new \Exception("mysql_pdo::start_transaction(".implode("|", $this->conn->errorInfo()).")");
 			}
 			return true;
 		}
@@ -72,7 +72,7 @@
 		 */
 		public function commit(){
 			if (!$this->conn->commit()) {
-				throw \Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
+				throw new \Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
 			}
 			$this->in_transaction = false;
 			return true;
@@ -85,7 +85,7 @@
 		 */
 		public function rollback(){
 			if (!$this->conn->rollBack()) {
-				throw \Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
+				throw new \Exception("mysql_pdo::commit(".implode("|", $this->conn->errorInfo()).")");
 			}
 			$this->in_transaction = false;
 			return true;

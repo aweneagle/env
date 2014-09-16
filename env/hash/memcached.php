@@ -6,8 +6,8 @@
 			$this->conn = new Memcached();
 			try {
 				$this->conn->addServer($host, $port);
-			} catch (Exception $e) {
-				throw \Exception("redis::__construct($host,$port), err=".$e->getMessage());
+			} catch (\Exception $e) {
+				throw new \Exception("redis::__construct($host,$port), err=".$e->getMessage());
 			}
 		}
 

@@ -19,7 +19,7 @@
 
 
 		public function expired($name, $seconds){
-			throw \Exception("get::expired($name, $seconds)");
+			throw new \Exception("get::expired($name, $seconds)");
 		}
 
 

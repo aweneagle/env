@@ -13,7 +13,7 @@
 			include_once $script_filename;
 			$func_name = trim(str_replace("/", "_", substr(0, - strlen(".php"), $script_filename)), "_");
 			if (!function_exists($func_name)) {
-				throw \Exception("func::call($script_filename,".json_encode($params).")");
+				throw new \Exception("func::call($script_filename,".json_encode($params).")");
 			}
 			return $func_name($params);
 		}

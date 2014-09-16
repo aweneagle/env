@@ -12,8 +12,8 @@
 				} else {
 					$this->conn->connect($host, $port);
 				}
-			} catch (Exception $e) {
-				throw \Exception("redis::__construct($host,$port, $pconn), err=".$e->getMessage());
+			} catch (\Exception $e) {
+				throw new \Exception("redis::__construct($host,$port, $pconn), err=".$e->getMessage());
 			}
 		}
 
@@ -40,7 +40,7 @@
 		 */
 		public function set($key, $value){
 			if (!$this->conn->set($key, $value)) {
-				throw \Exception("redis::set(".$key.",".$value.")");
+				throw new \Exception("redis::set(".$key.",".$value.")");
 			}
 			return true;
 		}
@@ -48,7 +48,7 @@
 
 		public function expired($key, $seconds){
 			if (!$this->conn->setTimeout($key, $seconds)) {
-				throw \Exception("redis::expired(".$key.",".$seconds.")");
+				throw new \Exception("redis::expired(".$key.",".$seconds.")");
 			}
 			return true;
 		}

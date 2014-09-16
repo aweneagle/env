@@ -20,7 +20,7 @@
 					date("Y-m-d H:i:s", time()),
 					$data);
 			} else {
-				throw \Exception("file_log::write($data)");
+				throw new \Exception("file_log::write($data)");
 			}
 			@file_put_contents($this->filepath, implode("|", $data), FILE_APPEND);
 		}

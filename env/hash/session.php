@@ -21,7 +21,7 @@
 
 
 		public function expired($name, $seconds){
-			throw \Exception("session::expired($name, $seconds)");
+			throw new \Exception("session::expired($name, $seconds)");
 		}
 
 		public function exists($key){

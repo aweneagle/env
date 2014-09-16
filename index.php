@@ -29,7 +29,7 @@
 	env()->stdin = new \env\hash\get();
 	env()->stderr = new \env\stream\echo_output("json");
 	//env()->cookie = new \env\hash\redis("127.0.0.1", 6380);
-	//env()->cookie = new \env\hash\cookie();
+	env()->cookie = new \env\hash\cookie();
 	//env()->cookie = new \env\hash\post();
 	env()->session = new \env\hash\session();
 
