@@ -35,5 +35,11 @@
 		 */
 		public function all();
 
+
+		/* delete value by key 
+		 *
+		 */
+		public function delete($key);
+
 	}
 

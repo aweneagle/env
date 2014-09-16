@@ -4,17 +4,11 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, string or array, 'false' could not be pushed 
+		 * @param 	data, string or array or null, 'false' could not be pushed 
 		 *
 		 * @return 	always true 
 		 */
 		public function write($data);
 
-
-		/* read out data 
-		 *
-		 * @return 	string or array
-		 */
-		public function read();
 	}
 

@@ -1,5 +1,5 @@
 <?php
-	namespace \env\hash;
+	namespace env\hash;
 
 	class cookie implements \env\hash\ihash {
 
@@ -13,10 +13,11 @@
 
 
 		public function set($name, $value){
+			$_COOKIE[$name] = $value;
 			if (setcookie($name, $value)) {
 				return true;
 			}
-			throw new Exception("cookie::set($name,$value)");
+			throw new \Exception("cookie::set($name,$value)");
 		}
 
 		public function exists($key){
@@ -25,6 +26,10 @@
 
 		public function delete($key){
 			unset($_COOKIE[$key]);
+		}
+
+		public function all(){
+			return $_COOKIE;
 		}
 
 	}

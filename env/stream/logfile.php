@@ -8,7 +8,7 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, string or array, 'false' could not be pushed 
+		 * @param 	data, null or string or array
 		 *
 		 * @return 	always true 
 		 */

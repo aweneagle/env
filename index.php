@@ -28,6 +28,8 @@
 	env()->router = new \env\router\router();
 	env()->stdin = new \env\hash\get();
 	env()->stderr = new \env\stream\echo_output("json");
+	env()->cookie = new \env\hash\cookie();
+	env()->session = new \env\hash\session();
 
 	env()->router->explain($_SERVER['REQUEST_URI'], $module_path, $output);
 	

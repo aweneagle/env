@@ -2,6 +2,11 @@
 	namespace env\router;
 	class router implements \env\router\irouter {
 
+		private $default_output_format ;
+		public function __construct($default_output_format = 'html') {
+			$this->default_output_format = $default_output_format;
+		}
+
 		/* explain from `uri` into `module_path`, `output_format`
 		 *
 		 * @param	uri, string
@@ -13,9 +18,19 @@
 		public function explain($uri, &$module_path, &$output_format){
 			$uri = ltrim($uri, "/");
 			$uri = substr($uri, strpos($uri, "/"));
-			$module_path = substr($uri, 0, strrpos($uri, '.'));
-			$uri = substr($uri, 0, strpos($uri, '?'));
-			$output_format = substr($uri, strrpos($uri, '.') + 1);
+
+			if (preg_match('/^([^?]+)\?.*$/', $uri, $match)) {
+				$uri = $match[1];
+			}
+			if (preg_match('/^(.+)\.(\w+)$/', $uri, $match)) {
+				$module_path = $match[1];
+				$output_format = $match[2];
+
+			} else {
+				$module_path = $uri;
+				$output_format = $this->default_output_format;
+			}
+
 			if ($module_path == null || $output_format == null) {
 				throw new Exception("default::explain($uri)");
 			}

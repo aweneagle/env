@@ -44,7 +44,7 @@
 		 */
 		public function get_value($sql, array $params=array()){
 			if ($result = $this->query($sql,$params)) {
-				return array_shift($result);
+				return array_shift($result[0]);
 			} else if ($result = $this->conn->lastInsertId()) {
 				return $result;
 			} else {
