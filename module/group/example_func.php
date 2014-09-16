@@ -1,7 +1,5 @@
 <?php
-namespace group;
-class example {
-	public function run($params){
+function group_example_func($params) {
 
 		env()->db0->start_transaction();
 
@@ -16,5 +14,4 @@ class example {
 		env()->cookie->expired("a_value", 3);
 
 		return array("a"=>$params["a"], 'userid'=>$userid);
-	}
 }

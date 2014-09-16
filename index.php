@@ -51,7 +51,9 @@
 	/****************************
 	 * call modules
 	 * *************************/
-	env()->caller = new \env\caller\obj();
+	//env()->caller = new \env\caller\obj(__DIR__ . "/module/");
+	//env()->caller = new \env\caller\func(__DIR__ . "/module/");
+	env()->caller = new \env\caller\script(__DIR__ . "/module/");
 
 	try {
 		/* 
