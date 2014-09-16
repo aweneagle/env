@@ -9,7 +9,7 @@
 				||
 			$pconn && !$this->conn->pconnect($host, $port)
 			) {
-				throw new Exception("redis::__construct($host, $port, $prefix, $pconn)");
+				throw \Exception("redis::__construct($host, $port, $prefix, $pconn)");
 			}
 		}
 

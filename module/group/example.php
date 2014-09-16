@@ -12,7 +12,8 @@ class example {
 		env()->db0->commit();
 
 		env()->session->set("userid", $userid);
-		env()->cookie->set("a_value", $params['a'], 60);
+		env()->cookie->set("a_value", $params['a']);
+		env()->cookie->expired("a_value", 3);
 
 		return array("a"=>$params["a"], 'userid'=>$userid);
 	}

@@ -15,8 +15,13 @@
 		}
 
 
-		public function set($name, $value, $expired=0){
+		public function set($name, $value){
 			$_SESSION[$name] = $value;
+		}
+
+
+		public function expired($name, $seconds){
+			throw \Exception("session::expired($name, $seconds)");
 		}
 
 		public function exists($key){

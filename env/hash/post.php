@@ -1,7 +1,7 @@
 <?php
-	namespace \env\hash;
+	namespace env\hash;
 
-	class post implements \env\ihash {
+	class post implements \env\hash\ihash {
 
 
 		public function get($name){
@@ -12,9 +12,14 @@
 		}
 
 
-		public function set($name, $value, $expired=0){
+		public function set($name, $value){
 			$_POST[$name] = $value;
 			return true;
+		}
+
+
+		public function expired($name, $seconds){
+			throw new \Exception("post::expired($name, $seconds)");
 		}
 
 
@@ -25,6 +30,11 @@
 
 		public function delete($key){
 			unset($_POST[$key]);
+		}
+
+
+		public function all(){
+			return $_POST;
 		}
 
 	}

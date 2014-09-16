@@ -12,9 +12,14 @@
 		}
 
 
-		public function set($name, $value, $expired=0){
+		public function set($name, $value){
 			$_GET[$name] = $value;
 			return true;
+		}
+
+
+		public function expired($name, $seconds){
+			throw \Exception("get::expired($name, $seconds)");
 		}
 
 

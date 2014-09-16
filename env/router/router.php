@@ -32,7 +32,7 @@
 			}
 
 			if ($module_path == null || $output_format == null) {
-				throw new Exception("default::explain($uri)");
+				throw \Exception("default::explain($uri)");
 			}
 			return true;
 		}

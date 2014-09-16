@@ -1,18 +1,19 @@
 <?php
-	class redis implements \env\ihash {
+	namespace env\hash;
+
+	class redis implements \env\hash\ihash {
 		private $conn = null; 
 
-		public function __construct($host,$port, $pconn=false){
-			$this->conn = new Redis();
+		public function __construct($host, $port, $pconn=false){
+			$this->conn = new \Redis();
 			try {
 				if ($pconn) {
 					$this->conn->pconnect($host, $port);
 				} else {
 					$this->conn->connect($host, $port);
 				}
-				$this->conn->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_IGBINARY);
 			} catch (Exception $e) {
-				throw new Exception("redis::__construct($host,$port, $pconn), err=".$e->getMessage());
+				throw \Exception("redis::__construct($host,$port, $pconn), err=".$e->getMessage());
 			}
 		}
 
@@ -38,8 +39,20 @@
 		 * @return always true
 		 */
 		public function set($key, $value){
-			return $this->conn->set($key, $value);
+			if (!$this->conn->set($key, $value)) {
+				throw \Exception("redis::set(".$key.",".$value.")");
+			}
+			return true;
 		}
+
+
+		public function expired($key, $seconds){
+			if (!$this->conn->setTimeout($key, $seconds)) {
+				throw \Exception("redis::expired(".$key.",".$seconds.")");
+			}
+			return true;
+		}
+
 
 		/* key exists 
 		 *
@@ -59,5 +72,21 @@
 		 */
 		public function delete($key){
 			return $this->conn->delete($key);
+		}
+
+
+		/* get all 
+		 *
+		 * @return array
+		 */
+		public function all(){
+			$all = array();
+			$keys = $this->conn->keys("*");
+			if ($keys) {
+				foreach ($keys as $k) {
+					$all[$k] = $this->conn->get($k);
+				}
+			}
+			return $all;
 		}
 	}

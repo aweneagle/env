@@ -7,7 +7,7 @@
 			try {
 				$this->conn->addServer($host, $port);
 			} catch (Exception $e) {
-				throw new Exception("redis::__construct($host,$port), err=".$e->getMessage());
+				throw \Exception("redis::__construct($host,$port), err=".$e->getMessage());
 			}
 		}
 
