@@ -1,11 +1,16 @@
 <?php
-namespace module\group;
+namespace group;
 class session {
 	public function run($params){
+		env()->cookie->set("a_value", 100);
+		env()->session->set('a_value', 1000);
+		
+		//header("Location: /module/session/redir.json");
+		//header("Location: /module/group/redir.json");
 
-		$session = env()->session->get("userid");
-		$cookie = env()->cookie->get("a_value");
-
-		return array('session'=>$session, 'cookie'=>$cookie);
+		return array( 
+			'cookie'=>env()->cookie->get('a_value'),
+			'session'=>env()->session->get('a_value')
+	   	);
 	}
 }

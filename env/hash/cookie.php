@@ -3,6 +3,14 @@
 
 	class cookie implements \env\hash\ihash {
 
+		private $path = '/';
+
+		public function __construct($path = null){
+			if ($path) {
+				$this->path = $path;
+			}
+		}
+
 
 		public function get($name){
 			if (!isset($_COOKIE[$name])) {
@@ -14,7 +22,7 @@
 
 		public function set($name, $value){
 			$_COOKIE[$name] = $value;
-			if (setcookie($name, $value)) {
+			if (setcookie($name, $value, 0, $this->path)) {
 				return true;
 			}
 			throw new \Exception("cookie::set($name,$value)");
@@ -26,7 +34,7 @@
 			}
 			$expired += time();
 			$value = $_COOKIE[$name];
-			if (setcookie($name, $value, $expired)) {
+			if (setcookie($name, $value, $expired, $this->path)) {
 				return true;
 			}
 			throw new \Exception("cookie::set($name,$value)");
@@ -38,6 +46,10 @@
 
 		public function delete($key){
 			unset($_COOKIE[$key]);
+			if (setcookie($key, "", time()-3600, $this->path)) {
+				return true;
+			}
+			throw new \Exception("cookie::delete($key)");
 		}
 
 		public function all(){

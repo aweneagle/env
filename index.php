@@ -5,7 +5,8 @@
 	 **************************/
 	require __DIR__ . '/env/env.php';
 
-	env()->db0 = new \env\db\mysql_pdo("127.0.0.1", 3306, "db_weme_sdk", "db_weme_sdkdb_weme_sdk", "db_weme_sdk");
+	//env()->db0 = new \env\db\mysql_pdo("127.0.0.1", 3306, "db_weme_sdk", "db_weme_sdkdb_weme_sdk", "db_weme_sdk");
+	env()->db0 = new \env\db\mysqli("127.0.0.1", 3306, "db_weme_sdk", "db_weme_sdkdb_weme_sdk", "db_weme_sdk");
 	//env()->db0 = new \env\db\mysqli("127.0.0.1", 3306);
 	//env()->db0 = new \env\db\csvdb("/data/csv");
 
@@ -33,6 +34,8 @@
 	//env()->cookie = new \env\hash\post();
 	env()->session = new \env\hash\session();
 
+
+
 	env()->router->explain($_SERVER['REQUEST_URI'], $module_path, $output);
 	
 	switch ($output) {
@@ -51,9 +54,9 @@
 	/****************************
 	 * call modules
 	 * *************************/
-	//env()->caller = new \env\caller\obj(__DIR__ . "/module/");
+	env()->caller = new \env\caller\obj(__DIR__ . "/module/");
 	//env()->caller = new \env\caller\func(__DIR__ . "/module/");
-	env()->caller = new \env\caller\script(__DIR__ . "/module/");
+	//env()->caller = new \env\caller\script(__DIR__ . "/module/");
 
 	try {
 		/* 

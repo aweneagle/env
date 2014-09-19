@@ -22,6 +22,17 @@
 		public function get_value($sql, array $params=array());
 
 
+		/*  db query,  optional params
+		 *  get one row data
+		 *
+		 *  @param	sql, string; use "?" to identify params
+		 *  @param	params, array
+		 *
+		 *  @return array
+		 */
+		public function get_row($sql, array $params=array());
+
+
 		/* start transaction
 		 *
 		 * @return always true

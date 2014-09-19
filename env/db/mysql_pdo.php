@@ -20,10 +20,41 @@
 			if (!$st = $this->conn->prepare($sql)) {
 				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".implode("|",$this->conn->errorInfo()).",errno=".$this->conn->errorCode());
 			}
+
 			if (!$st->execute($params)) {
 				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".implode("|", $st->errorInfo()).",errno=".$st->errorCode());
 			}
-			return $st->fetchAll(\PDO::FETCH_ASSOC);
+
+			if ( $rows = $st->fetchAll(\PDO::FETCH_ASSOC)) {
+				/* SELECT some rows */
+				return $rows;
+
+			}
+
+			/* SELECT,UPDATE,DELETE,INSERT error */
+			if ($rows === false) {
+				$this->exception("mysql_pdo::query($sql,".json_encode($params)."),errmsg=".implode("|", $st->errInfo()).",errno=".$st->errorCode());
+			}
+
+			/* DELETE, INSERT, UPDATE some rows */
+			if ($rows_count = $st->rowCount()) {
+
+				/* rowCount by INSERT, UPDATE, DELETE */
+				if ($rows_count == 1 &&
+					($insertId = $this->conn->lastInsertId())
+				) {
+					/* INSERT one row, return id */
+					$rows_count = $insertId;
+
+				}
+				return array(array($rows_count));
+
+			} else {
+
+				/* SELECT empty row */
+				/* DELETE, INSERT, UPDATE no row */
+				return array();
+			}
 		}
 
 		private function exception($errmsg){
@@ -43,10 +74,25 @@
 		 *  @return string
 		 */
 		public function get_value($sql, array $params=array()){
+			if ($result = $this->get_row($sql,$params)) {
+				return array_shift($result);
+			} else {
+
+				return false;
+			}
+		}
+
+
+		/*  db query,  optional params
+		 *
+		 *  @param	sql, string; use "?" to identify params
+		 *  @param	params, array
+		 *
+		 *  @return array
+		 */
+		public function get_row($sql, array $params=array()){
 			if ($result = $this->query($sql,$params)) {
-				return array_shift($result[0]);
-			} else if ($result = $this->conn->lastInsertId()) {
-				return $result;
+				return $result[0];
 			} else {
 				return false;
 			}
