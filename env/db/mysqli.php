@@ -19,7 +19,7 @@
 				mysqli_rollback($this->conn);
 				$this->in_transaction = false;
 			}
-			throw new Exception($errmsg);
+			throw new \Exception($errmsg);
 		}
 
 		/*	db query , optional params
