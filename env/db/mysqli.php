@@ -14,6 +14,14 @@
 			$this->in_transaction = false;
 		}
 
+		private function exception($errmsg){
+			if ($this->in_transaction) {
+				mysqli_rollback($this->conn);
+				$this->in_transaction = false;
+			}
+			throw new Exception($errmsg);
+		}
+
 		/*	db query , optional params
 		 *	
 		 *	@param	sql, string; use "?" to identify params
@@ -40,7 +48,7 @@
 				} else {
 					foreach ($params as $search => $replacement) {
 						if (!preg_match('/^:[\w]+$/', $search)) {
-							throw new \Exception ("mysqli::query(),err=".json_encode($params));
+							$this->exception("mysqli::query(),err=".json_encode($params));
 						}
 						preg_match('/[\']/', $replacement, $match);
 						$sql = str_replace($search, '\''.preg_replace('/\'/', '\\\'', $replacement).'\'', $sql);
@@ -49,11 +57,11 @@
 			}
 
 			if (!$st = mysqli_prepare($this->conn, $sql)) {
-				throw new \Exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 
 			if (!mysqli_stmt_execute($st)) {
-				throw new \Exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
+				$this->exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
 			}
 
 			/* INSERT, UPDATE, DELETE some rows */
@@ -72,10 +80,10 @@
 					return array(array($insert_id));
 
 				} else if ($affected_row === -1) {
-					throw new \Exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
+					$this->exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
 
 				} else if ($affected_row === null) {
-					throw new \Exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
+					$this->exception("mysqli::query($sql,".json_encode($params)."),error=".mysqli_stmt_error($st).",errno=".mysqli_stmt_errno($st));
 
 				} else if ($affected_row === 0){
 
@@ -157,7 +165,7 @@
 		public function start_transaction(){
 			$this->in_transaction = true;
 			if (!mysqli_autocommit($this->conn, false)) {
-				throw new \Exception("mysqli::start_transaction(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::start_transaction(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 			return true;
 
@@ -170,10 +178,10 @@
 		 */
 		public function commit(){
 			if (!mysqli_commit($this->conn)) {
-				throw new \Exception("mysqli::commit(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::commit(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 			if (!mysqli_autocommit($this->conn, true)) {
-				throw new \Exception("mysqli::commit(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::commit(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 			$this->in_transaction = true;
 			return true;
@@ -187,10 +195,10 @@
 		 */
 		public function rollback(){
 			if (!mysqli_rollback($this->conn)){
-				throw new \Exception("mysqli::rollback(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::rollback(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 			if (!mysqli_autocommit($this->conn, true)){
-				throw new \Exception("mysqli::rollback(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
+				$this->exception("mysqli::rollback(),error=".mysqli_error($this->conn).",errno=".mysqli_errno($this->conn));
 			}
 			$this->in_transaction = true;
 			return true;
