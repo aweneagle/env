@@ -1,12 +1,25 @@
 <?php
 
 	/***********************
-	 * configure 
+	 * configuration 
+	 *
 	 **************************/
 	require __DIR__ . '/env/env.php';
 
+
+
+
+	/***********************
+	 * data operations 
+	 *
+	 * **********************/ 
+
 	//env()->db0 = new \env\db\mysql_pdo("127.0.0.1", 3306, "db_weme_sdk", "db_weme_sdkdb_weme_sdk", "db_weme_sdk");
 	env()->db0 = new \env\db\mysqli("127.0.0.1", 3306, "db_weme_sdk", "db_weme_sdkdb_weme_sdk", "db_weme_sdk");
+
+	//env()->form = new \env\upload\http("www.awen.com");
+	env()->form = new \env\upload\http("b.pic.wemepi.com");
+
 	//env()->db0 = new \env\db\mysqli("127.0.0.1", 3306);
 	//env()->db0 = new \env\db\csvdb("/data/csv");
 
@@ -21,13 +34,40 @@
 	//env()->queue0 = new \env\queue\redis("127.0.0.1", 3307, "message");
 	//env()->queue0 = new \env\queue\sockpipe("/tmp/pipe");
 	//env()->queue0 = new \env\queue\file("/tmp/pipefile");
+	
+	
+	/* ************************
+	 * data structs 
+	 *
+	 * ************************/
+	env()->server = new \env\globals\server;
+
+	env()->files['uploaded']->name  vs  $_FILES['uploaded']['name'];
+
+	env()->files = new \env\globals\files;						vs		$_FILES = array();
+	env()->files['uploaded'] = new \env\globals\up_file;		vs		$_FILES['upload'] = array();
+
 
 
 	/**************************
 	 * explain uri 
 	 * ***********************/
 	env()->router = new \env\router\router();
-	env()->stdin = new \env\hash\get();
+
+	switch (env()->server->REQUEST_METHOD) {
+		case 'GET':
+			env()->stdin = new \env\hash\get();
+			break;
+
+		case 'POST':
+			env()->stdin = new \env\hash\post();
+			break;
+
+		default:
+			env()->stdin = new \env\hash\console();
+			break;
+	}
+
 	env()->stderr = new \env\stream\echo_output("json");
 	//env()->cookie = new \env\hash\redis("127.0.0.1", 6380);
 	env()->cookie = new \env\hash\cookie();
@@ -36,11 +76,15 @@
 
 
 
-	env()->router->explain($_SERVER['REQUEST_URI'], $module_path, $output);
+	env()->router->explain(env()->server->REQUEST_URI, $module_path, $output);
 	
 	switch ($output) {
 	case 'json':
 		env()->stdout = new \env\stream\echo_output("json");
+		break;
+
+	case 'text':
+		env()->stdout = new \env\stream\echo_output('text');
 		break;
 
 	case 'html':

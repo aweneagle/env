@@ -10,6 +10,12 @@ class example {
 		//$userid = env()->db0->get_value('insert into admin_user (`username`, `cp_id`, `password`) values (?,?,?)', array('andy', 1, md5("123456")));
 		//$userid = env()->db0->get_value('insert into admin_user (`username`, `cp_id`, `password`) values (?,?,?)', array('andy2', 1, md5("123456")));
 		//env()->db0->rollback();
+		env()->files->move("post_name", "/tmp/upload");
+		$file_type = env()->files->get_type("post_name");
+		$file_type = env()->files->get_tmp_name("post_name");
+		$file_type = env()->files->get_error("post_name");
+		$file_type = env()->files->get_size("post_name");
+
 
 		env()->db0->commit();
 		return array("userid"=>$query);

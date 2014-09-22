@@ -18,8 +18,8 @@
 		 * @return 	always true 
 		 */
 		public function write($data){
-			if (!is_array($data) && !is_string($data)) {
-				throw new \Exception("post::write($data)");
+			if (!is_array($data) && !is_string($data) && $data != null && !is_numeric($data)) {
+				throw new \Exception("echo_output::write($data)");
 			}
 			$class = "\\env\\stream\\echo_format_".$this->output_format;
 			$obj = new $class;
@@ -37,6 +37,17 @@
 		public function read(){
 			return null;
 		}
+	}
+
+	class echo_format_text {
+		public function translate_str($data) {
+			return $data;
+		}
+
+		public function translate_array($data) {
+			return json_encode($data);
+		}
+
 	}
 
 	class echo_format_json {

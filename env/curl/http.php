@@ -1,5 +1,16 @@
 <?php
-	interface icurl {
+	namespace env\curl;
+	class http implements \env\curl\icurl {
+
+		private $host ;
+		private $port ;
+		private $method;
+
+		public function __construct($host, $port=80, $method='POST'){
+			$this->host = $host;
+			$this->port = $port;
+			$this->method = $method;
+		}
 
 		/* send request and fetch response 
 		 *
@@ -8,25 +19,40 @@
 		 *
 		 * @return  string
 		 */
-		public function request($uri, array $params = array());
+		public function request($uri, array $params = array()){
+			if (!$ch = curl_init()) {
+				throw new Exception("http::request($uri,".json_encode($params)."),err=".curl_strerror(curl_errno($ch)));
+			}
 
+			if ($this->port != 80) {
+				$url = "http://". $this->host . ":" . $this->port . "/" . $uri;
+			} else {
+				$url = "http://". $this->host . "/" . $uri;
+			}
 
-		/* set host
-		 *
-		 */
-		public function host($host);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+			switch ($this->method) {
+			case 'GET':
+				if (!empty($params)) {
+					curl_setopt($ch, CURLOPT_URL, $url . "?" . http_build_query($params));
 
-		/* set port 
-		 *
-		 */
-		public function port($port);
+				} else {
+					curl_setopt($ch, CURLOPT_URL, $url);
 
+				}
+				break;
 
-		/* set option
-		 *
-		 * @param	$name, string
-		 * @param	$value, string
-		 */
-		public function set_option($name, $value);
+			case 'POST':
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_POST, true);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+				break;
+			}
+			$result = curl_exec($ch);
+			if ($result === false) {
+				throw new \Exception("http::request($uri,".json_encode($params)."),err=".curl_strerror(curl_errno($ch)));
+			}
+			return $result;
+		}
 	}

@@ -10,11 +10,4 @@
 		 */
 		public function request($uri, array $params = array());
 
-
-		/* set option
-		 *
-		 * @param	$name, string
-		 * @param	$value, string
-		 */
-		public function set_option($name, $value);
 	}
