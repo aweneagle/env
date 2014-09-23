@@ -1,40 +1,34 @@
 <?php
 
-	require_once "../path.php";
-	require WEB_ROOT . '/env/env.php';
-
 	/***********************
 	 * configuration 
-	 *
 	 **************************/
-	env('APP_ENV', require( APP_ROOT . "/include.php"));
+	env_curr("APP_ENV");
+
+	env()->load(require(dirname(__FILE__). "/config.php"));
+
+
+	env_curr("MONITOR_ENV");
+
+	env()->load(require(APP_ROOT."/../monitor/config.php"));
+
+
+	env_curr("ADMIN_ENV");
+
+	env()->load(require(APP_ROOT . "/../admin/config.php"));
 
 
 
 	/****************************
-	 * call modules
+	 * call modules		, env()->call()	equals	env()->caller->call()
 	 * *************************/
+	env_curr("APP_ENV");
+	env()->call('/entry');		// call app/entry.php
 
-	try {
-		/* 
-		 *  env()->call()   equals   env()->caller->call()
-		 */
-		$input = env()->call('/read');
-
-		env()->call('/log/user_behavior', $input);
-
-		$route = env()->call('/route');
-
-		$data = env()->call($route['mod'], $input);
+	env_curr("ADMIN_ENV");
+	env()->call('/entry');		// call admin/entry.php
 
 
-		env()->call('/write', array('data'=>$data, 'format'=>$route['output_format'], 'mod'=>$route['mod']));
-
-		env()->call('/log/user_behavior', $input);
-
-
-	} catch (Exception $e){
-
-		env()->call('/log/error', array($e));
-	}
-
+	env_destroy("APP_ENV");
+	env_destroy("MONITOR_ENV");
+	env_destroy("ADMIN_ENV");

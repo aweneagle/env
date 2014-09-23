@@ -1,4 +1,7 @@
 <?php
+if (!define("ENV_CONF")) {
+
+	define("ENV_CONF", realpath(__FILE__));
 	define("ENV_ROOT", dirname(__DIR__));
 
 	function __autoload($class_name) {
@@ -45,13 +48,30 @@
 		/* global environment object list */
 		private static $env_list = array();
 
-		private static $curr_env = 'DEFAULT';
+		private static $env_history = array();
+
+		private static $curr_env = null;
 
 		public static function set_curr($env_name){
+			if (self::$curr_env) {
+				array_push(self::$env_history, self::$curr_env);
+			}
 			self::$curr_env = $env_name;
+			return self::get($env_name);
+		}
+
+		public static function restore(){
+			if (empty(self::$env_history)) {
+				self::$curr_env = null;
+			} else {
+				self::$curr_env = array_pop(self::$env_history);
+			}
 		}
 
 		public static function curr(){
+			if (!self::$curr_env) {
+				self::$curr_env = 'DEFAULT';
+			}
 			return self::get(self::$curr_env);
 		}
 
@@ -122,10 +142,16 @@
 	function env($env_name = null) {
 		if ($env_name === null) {
 			return Env::curr();
+		} else {
+			return Env::get($env_name);
 		}
-		return Env::get($env_name);
 	}
 
-	function set_curr_env($env_name){
-		Env::set_curr($env_name);
+	function env_curr($env_name){
+		return Env::set_curr($env_name);
 	}
+
+	function env_restore(){
+		Env::restore();
+	}
+}

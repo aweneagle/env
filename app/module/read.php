@@ -2,6 +2,7 @@
 namespace module;
 class read {
 	public function run(){
+		$from_console = false;
 		switch (env()->server->REQUEST_METHOD) {
 		case 'GET' :
 			$in = new \env\hash\get();
@@ -13,9 +14,21 @@ class read {
 
 		default:
 			$in = new \env\hash\console();
+			$from_console = true;
 			break;
 
 		}
-		return $in->all();
+		if (!$from_console) {
+			$uri = env()->server->REQUEST_URI;
+		} else {
+			$uri = $in->get("uri");
+		}
+		env()->router->explain($uri, $module_path, $output);
+		
+		return array(
+			'mod'	=>	$module_path,
+			'format'=>	$output,
+			'data'	=>	$in->all()
+		);
 	}
 }
