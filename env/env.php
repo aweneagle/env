@@ -78,10 +78,42 @@
 
 		/* ==================================
 		 * call a module
-                 * ==================================
-                 */
+		 * ==================================
+		 */
 		public function call($script_filename, array $params=array()) {
 			return $this->src['caller']->call($script_filename, $params);
+		}
+
+
+		/* 
+		 * load configuration ,  if src already exists , it will be covered 
+		 *
+		 * @param	src, array( $src_name => $object )
+		 *			example:
+		 *				$env->load(array(
+		 *					'db0'	=>	new	\env\idb\mysqli("127.0.0.1", 3306),
+		 *					'cache0'=>	new \env\hash\memcache("127.0.0.1", 12008),
+		 *					...
+		 *					)
+		 *				);
+		 *
+		 * @return	always true
+		 *
+		 */
+
+		public function load(array $src){
+			foreach ($src as $name => $obj) {
+				$this->src[$name] = $obj;
+			}
+			return true;
+		}
+
+
+		public function __destruct(){
+			foreach ($this->src as $i => $src) {
+				unset($this->src[$i]);
+				unset($src);
+			}
 		}
 	}
 
