@@ -5,10 +5,10 @@
 	class env implements \env\caller\icaller {
 
 		private $env ;
+		private $conf;	/* configure file path */
 
-		public function __construct(array $src){
-			$this->env = new \Env;
-			$this->env->load($src);
+		public function __construct($config_path){
+			$this->conf = $config_path;
 		}
 
 		/* call a module
@@ -19,7 +19,17 @@
 		 * @return	string or array
 		 */
 		public function call($module_path, array $params = array()){
-			return $this->env->call($module_path, $params);
+			if (!$this->env) {
+				$this->env = env(spl_object_hash($this));
+				$this->env->load(require($this->conf));
+			}
+			$this->env->wakeup();
+			$data = $this->env->call($module_path, $params);
+			$this->env->sleep();
+		}
+
+		public function __destruct(){
+			unset($this->env);
 		}
 	}
 

@@ -11,5 +11,5 @@ namespace env\globals;
 	 *
 	 */
 
-class server implements \env\iglobals {
+class server {
 }

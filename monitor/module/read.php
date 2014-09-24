@@ -1,5 +1,5 @@
 <?php
-namespace app {
+namespace mon {
 	class read {
 		public function run(){
 			$from_console = false;
@@ -26,7 +26,6 @@ namespace app {
 			env()->router->explain($uri, $module_path, $output);
 
 			return array(
-				'env' => 'app',
 				'mod'	=>	$module_path,
 				'format'=>	$output,
 				'data'	=>	$in->all()

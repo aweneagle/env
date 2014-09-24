@@ -1,5 +1,5 @@
 <?php
-namespace app {
+namespace adm {
 	class read {
 		public function run(){
 			$from_console = false;

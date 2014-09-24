@@ -1,15 +1,15 @@
 <?php
-if (!define("ENV_CONF")) {
+if (!defined("ENV_CONF")) {
 
 	define("ENV_CONF", realpath(__FILE__));
 	define("ENV_ROOT", dirname(__DIR__));
 
-	function __autoload($class_name) {
+	spl_autoload_register(function($class_name) {
 		$file_path = ENV_ROOT . "/".str_replace("\\", "/", $class_name).".php";
 		if (file_exists($file_path)) {
 			require($file_path);
 		}
-	}
+	});
 
 	class Env {
 
@@ -19,8 +19,9 @@ if (!define("ENV_CONF")) {
 		 * ==================================
 		 */
 		private $src = array();
+		private $env_name ;
 
-		public function __construct(){
+		private function __construct(){
 		}
 
 		public function __get($name){
@@ -48,25 +49,12 @@ if (!define("ENV_CONF")) {
 		/* global environment object list */
 		private static $env_list = array();
 
-		private static $env_history = array();
 
 		private static $curr_env = null;
 
-		public static function set_curr($env_name){
-			if (self::$curr_env) {
-				array_push(self::$env_history, self::$curr_env);
-			}
-			self::$curr_env = $env_name;
-			return self::get($env_name);
-		}
 
-		public static function restore(){
-			if (empty(self::$env_history)) {
-				self::$curr_env = null;
-			} else {
-				self::$curr_env = array_pop(self::$env_history);
-			}
-		}
+		private static $env_history = array();
+
 
 		public static function curr(){
 			if (!self::$curr_env) {
@@ -75,13 +63,15 @@ if (!define("ENV_CONF")) {
 			return self::get(self::$curr_env);
 		}
 
+
 		public static function exists($env_name){
 			return isset(self::$env_list[$env_name]);
 		}
 
 		public static function init($env_name){
 			self::$env_list[$env_name] = new self;
-			return true;
+			self::$env_list[$env_name]->env_name = $env_name;
+			return self::$env_list[$env_name];
 		}
 
 		public static function get($env_name){
@@ -125,6 +115,53 @@ if (!define("ENV_CONF")) {
 			foreach ($src as $name => $obj) {
 				$this->src[$name] = $obj;
 			}
+			return $this;
+		}
+
+
+		public function halt($errmsg, $errno=null) {
+			$this->sleep();
+			throw new \Exception($errmsg, $errno);
+		}
+
+		public function sleep(){
+			if ($this->env_name == self::$curr_env && !empty(self::$env_history)) {
+
+				self::$curr_env = array_pop(self::$env_history);
+
+				return true;
+			}
+			return false;
+		}
+
+		public function wakeup(){
+			if ($this->env_name != self::$curr_env || self::$curr_env == null) {
+
+				if (self::$curr_env) {
+					array_push(self::$env_history, self::$curr_env);
+				}
+				self::$curr_env = $this->env_name;
+
+				return true;
+			}
+			return false;
+		}
+
+		public function destroy() {
+			foreach (self::$env_history as $i => $ename) {
+				if ($this->env_name == $ename) {
+					unset(self::$env_history[$i]);
+				}
+			}
+			if (self::$curr_env == $this->env_name) {
+				if (!empty(self::$env_history)) {
+					self::$curr_env = array_pop(self::$env_history);
+				} else {
+					self::$curr_env = null;
+				}
+			}
+
+			unset(self::$env_list[$this->env_name]);
 			return true;
 		}
 
@@ -135,6 +172,12 @@ if (!define("ENV_CONF")) {
 				unset($src);
 			}
 		}
+
+		public function show_curr(){
+			echo "===" . self::$curr_env . "===\n";
+			print_r(self::$env_history);
+			print_r(array_keys(self::$env_list));
+		}
 	}
 
 
@@ -143,15 +186,14 @@ if (!define("ENV_CONF")) {
 		if ($env_name === null) {
 			return Env::curr();
 		} else {
-			return Env::get($env_name);
+			$env = Env::get($env_name);
+			$env->wakeup();
+			return $env;
 		}
 	}
 
-	function env_curr($env_name){
-		return Env::set_curr($env_name);
+	function env_get($env_name) {
+		return Env::get($env_name);
 	}
 
-	function env_restore(){
-		Env::restore();
-	}
 }

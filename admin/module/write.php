@@ -1,5 +1,5 @@
 <?php
-namespace app {
+namespace adm {
 	class write {
 		public function run($data){
 

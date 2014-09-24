@@ -15,5 +15,5 @@ namespace env\globals;
  *
  * */
 
-class files implements \env\iglobals {
+class files {
 }

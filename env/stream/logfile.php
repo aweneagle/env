@@ -1,5 +1,5 @@
 <?php
-	namespace \env\stream;
+	namespace env\stream;
 	class logfile implements \env\stream\istream {
 		private $filepath = null;
 		public function __construct($filepath) {

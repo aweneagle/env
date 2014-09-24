@@ -1,5 +1,5 @@
 <?php
-namespace app\log {
+namespace adm\log {
 	class response {
 		public function run($params){
 			array_unshift($params, date("Y-m-d H:i:s", APP_NOW_TIME)); 

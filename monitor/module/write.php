@@ -1,10 +1,12 @@
 <?php
-namespace app {
+namespace mon {
 	class write {
 		public function run($data){
+			echo "-------------- mon --------------\n";
 
 			$output = @$data['format'];
 			$data = @$data['data'];
+			$module_path = @$data['mod'];
 
 			switch ($output) {
 			case 'json':
