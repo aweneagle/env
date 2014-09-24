@@ -11,7 +11,8 @@ namespace app\log {
 			array_unshift($params, date("Y-m-d H:i:s", APP_NOW_TIME)); 
 			array_unshift($params, "[REQUEST]"); 
 
-			env()->monitor->call("/write", array('data'=>$params, 'format'=>'json', 'mod'=>'/write'));
+			//env()->monitor->call("/write", array('data'=>$params, 'format'=>'json', 'mod'=>'/write'));
+			env()->log->write($params);
 		}
 	}
 }

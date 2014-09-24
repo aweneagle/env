@@ -1,0 +1,3 @@
+url="http://www.baidu.com/module/example/do_query.json?a=1&b=2"
+data-urlencode="ie=utf-8"
+data-urlencode="f=8"
