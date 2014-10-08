@@ -24,7 +24,7 @@ namespace app {
 
 				}
 
-				//env()->call('/write', array('mod'=>$input['mod'], 'format'=>$input['format'], 'data'=>$data));
+				env()->call('/write', array('mod'=>$input['mod'], 'format'=>$input['format'], 'data'=>$data));
 
 			} catch (\Exception $e){
 
