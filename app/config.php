@@ -42,11 +42,14 @@ if (!defined("APP_CONF")) {
 		//$env['log_out'] = new \env\stream\env(new \env\caller\env(APP_ROOT . "/../monitor/config.php"), "/log/response");
 
 		//$env['log'] = new \env\stream\logfile(APP_ROOT . "/log/info." . date("Y-m-d", APP_NOW_TIME) . '.log');
-		$env['log_out'] = $env['log_in'] = $env['log'] = new \env\stream\echo_output('csv1', "\n");
+		//$env['log_out'] = $env['log_in'] = $env['log'] = new \env\stream\echo_output('csv1', "\n");
+		$env['log_out'] = $env['log_in'] = $env['log'] = new \env\stream\logfile(APP_ROOT . "/log/info." . date("Y-m-d", APP_NOW_TIME) . '.log');
 
 		$env['open_request_log'] = true;
+		$env['open_request_log'] = false;
 	
 		$env['open_response_log'] = true;
+		$env['open_response_log'] = false;
 
 		return $env;
 	}

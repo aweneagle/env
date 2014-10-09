@@ -1,4 +1,4 @@
-url="http://www.app.com/module/example/show_params.json?a=1&b=2"
+url="http://www.awen.com/module/example/show_params.json?a=1&b=2"
 data-urlencode="ie=utf-8"
 data-urlencode="f=8"
 data-urlencode=data@test.json

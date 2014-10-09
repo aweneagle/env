@@ -1,4 +1,4 @@
-url="http://www.baidu.com/module/not_exists?a=1&b=2"
+url="http://www.awen.com/module/not_exists?a=1&b=2"
 data-urlencode="ie=utf-8"
 data-urlencode="f=8"
 data-urlencode=data@test.json

@@ -12,4 +12,24 @@ namespace env\globals;
 	 */
 
 class server {
+	private $server_env = array();
+	public function __construct(){
+		$this->server_env = $_SERVER;
+	}
+	public function __get($name) {
+		if (isset($this->server_env[$name])) {
+			return $this->server_env[$name];
+		}
+		return false;
+	}
+
+	public function __set($name, $value){
+		$this->server_env[$name] = $value;
+		return true;
+	}
+
+	public function __isset($name) {
+		return isset($this->server_env[$name]);
+	}
+
 }
