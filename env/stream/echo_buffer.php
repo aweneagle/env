@@ -1,16 +1,15 @@
 <?php
 	namespace env\stream;
-	class echo_output implements \env\stream\istream {
+	class echo_buffer implements \env\stream\istream {
 		private $output_format;
-		private $line_split;
+		private $data = array();
 
-		public function __construct($output_format, $line_split="\n"){
-			$class = "\\env\\stream\\echo_format_".$output_format;
+		public function __construct($output_format){
+			$class = "\\env\\stream\\echo_buffer_".$output_format;
 			if (!class_exists($class)) {
 				throw new \Exception("echo_format::__construct($output_format)");
 			}
 			$this->output_format = $output_format;	
-			$this->line_split = $line_split;
 		}
 
 		/* write in data 
@@ -23,13 +22,15 @@
 			if (!is_array($data) && !is_string($data) && $data != null && !is_numeric($data)) {
 				throw new \Exception("echo_output::write($data)");
 			}
-			$class = "\\env\\stream\\echo_format_".$this->output_format;
+			$this->data[] = $data;
+			return true;
+		}
+
+		public function __destruct(){
+
+			$class = "\\env\\stream\\echo_buffer_".$this->output_format;
 			$obj = new $class;
-			if (is_array($data)) {
-				echo $obj->translate_array($data) . $this->line_split;
-			} else {
-				echo $obj->translate_str($data) . $this->line_split;
-			}
+			echo $obj->translate_array($this->data);
 		}
 
 		/* read out data 
@@ -41,7 +42,7 @@
 		}
 	}
 
-	class echo_format_text {
+	class echo_buffer_text {
 		public function translate_str($data) {
 			return $data;
 		}
@@ -52,7 +53,7 @@
 
 	}
 
-	class echo_format_json {
+	class echo_buffer_json {
 		public function translate_str($data) {
 			return json_encode(array($data));
 		}
@@ -62,7 +63,7 @@
 		}
 	}
 
-	class echo_format_xml {
+	class echo_buffer_xml {
 		public function translate_str($data) {
 			return simple_xml(array($data));
 		}
@@ -71,26 +72,12 @@
 		}
 	}
 
-	class echo_format_html {
+	class echo_buffer_html {
 		public function translate_str($data) {
 			return "<html>" . $data . "</html>";
 		}
 		public function translate_array($data) {
 			return "<html>" . json_encode($data) . "</html>";
-		}
-	}
-
-	class echo_format_csv1 {
-		public function translate_str($data){
-			return $data;
-		}
-		public function translate_array($data){
-			foreach ($data as $i => $d) {
-				if (is_array($d)) {
-					$data[$i] = json_encode($d);
-				}
-			}
-			return implode("|", $data);
 		}
 	}
 

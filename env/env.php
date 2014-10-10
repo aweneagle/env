@@ -1,8 +1,14 @@
 <?php
 if (!defined("ENV_CONF")) {
 
+	define("ENV_TIME_ZONE", "Asia/Hong_Kong");
+	
 	define("ENV_CONF", realpath(__FILE__));
 	define("ENV_ROOT", dirname(__DIR__));
+
+	date_default_timezone_set(ENV_TIME_ZONE);
+	define("ENV_NOW_TIME", time());
+	define("ENV_NOW_DATE", date("Y-m-d H:i:s", ENV_NOW_TIME));
 
 	spl_autoload_register(function($class_name) {
 		$file_path = ENV_ROOT . "/".str_replace("\\", "/", $class_name).".php";
@@ -11,6 +17,24 @@ if (!defined("ENV_CONF")) {
 		}
 	});
 
+	set_exception_handler(function(Exception $e) {
+		if ($env = env()) {
+			$errmsg = $env->exception->format($e);
+			foreach ($errmsg as $line) {
+				$env->stderr->write($line);
+			}
+		}
+	});
+
+	set_error_handler(function($errno, $errmsg, $errfile, $errline, array $errcontext) {
+		if ($env = env()) {
+			$errmsg = $env->error->format($errno, $errmsg, $errfile, $errline, $errcontext);
+			foreach ($errmsg as $line) {
+				$env->stderr->write($line);
+			}
+		}
+	}, E_ALL );
+
 	class Env {
 
 
@@ -18,10 +42,17 @@ if (!defined("ENV_CONF")) {
 		 * configure  io sources
 		 * ==================================
 		 */
-		private $src = array();
+		private $src = array(
+			'error'	=>	null,			
+			'exception'	=>	null,
+			'stderr'	=>	null
+		);
 		private $env_name ;
 
 		private function __construct(){
+			$this->src['error'] = new \env\error\error;
+			$this->src['exception'] = new \env\exception\exception;
+			$this->src['stderr'] = new \env\stream\stderr();
 		}
 
 		public function __get($name){
