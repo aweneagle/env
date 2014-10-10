@@ -1,6 +1,6 @@
 <?php
-	namespace env\stream;
-	class smarty implements \env\stream\istream {
+	namespace env\format;
+	class smarty implements \env\format\iformat {
 		private $tpl = null;
 		private $tpl_dir = null;
 		public function __construct($tpl, $tpl_dir = null) {
@@ -13,14 +13,11 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, string or array or null
+		 * @param 	data, param as array
 		 *
 		 * @return 	always true 
 		 */
-		public function write($data){
-			if ($data && !is_array($data) && !is_string($data)) {
-				throw new \Exception("smarty::write()");
-			}
+		public function write(array $data){
 			if (!class_exists("\\Smarty")) {
 				require ENV_ROOT . "/env/smarty/libs/Smarty.class.php";
 			}
@@ -28,11 +25,8 @@
 			$smarty->compile_dir = ENV_ROOT . "/env/smarty/templates_c/";
             $smarty->config_dir = ENV_ROOT . "/env/smarty/configs/";
             $smarty->cache_dir = ENV_ROOT . "/env/smarty/cache/";
-			if (!is_array($data)) {
-				$data = array($data);
-			}
 			$smarty->assign($data);
-			$smarty->display($this->tpl_dir . "/" . $this->tpl);
+			return $smarty->fetch($this->tpl_dir . "/" . $this->tpl);
 		}
 
 	}

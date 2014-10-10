@@ -8,21 +8,15 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, null or string or array
+		 * @param 	data, param as string
 		 *
 		 * @return 	always true 
 		 */
 		public function write($data){
-			if (is_array($data)) {
-				array_unshift($data, date("Y-m-d H:i:s", time()));
-			} else if (is_string($data)) {
-				$data = array(
-					date("Y-m-d H:i:s", time()),
-					$data);
-			} else {
-				throw new \Exception("file_log::write($data)");
+			if (!is_string($data) && $data != null) {
+				throw new \Exception("Wrong param for logfile::write(), need string,data=".$data);
 			}
-			@file_put_contents($this->filepath, implode("|", $data), FILE_APPEND);
+			@file_put_contents($this->filepath, $data, FILE_APPEND);
 		}
 
 	}

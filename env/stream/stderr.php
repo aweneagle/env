@@ -4,17 +4,16 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, string or array or null, 'false' could not be pushed 
+		 * @param 	string
 		 *
 		 * @return 	always true 
 		 */
 		public function write($data){
 			$stderr = @fopen("php://stderr", "w");
-			if (is_array($data)) {
-				fwrite($stderr, implode("\n", $data) . "\n");
-			} else {
-				fwrite($stderr, $data . "\n");
+			if (!is_string($data) && $data != null) {
+				throw new \Exception ("Wrong param for stderr::write(), need string");
 			}
+			fwrite($stderr, $data);
 		}
 
 	}

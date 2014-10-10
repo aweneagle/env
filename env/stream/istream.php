@@ -4,7 +4,7 @@
 
 		/* write in data 
 		 *
-		 * @param 	data, string or array or null, 'false' could not be pushed 
+		 * @param 	$data,  param as  string 
 		 *
 		 * @return 	always true 
 		 */

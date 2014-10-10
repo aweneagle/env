@@ -52,7 +52,7 @@ if (!defined("ENV_CONF")) {
 		private function __construct(){
 			$this->src['error'] = new \env\error\error;
 			$this->src['exception'] = new \env\exception\exception;
-			$this->src['stderr'] = new \env\stream\stderr();
+			$this->src['stderr'] = new \env\lib\io(new \env\stream\stderr, new \env\format\csv("|"));
 		}
 
 		public function __get($name){
@@ -210,7 +210,6 @@ if (!defined("ENV_CONF")) {
 			print_r(array_keys(self::$env_list));
 		}
 	}
-
 
 
 	function env($env_name = null) {
