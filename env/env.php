@@ -21,7 +21,7 @@ if (!defined("ENV_CONF")) {
 		if ($env = env()) {
 			$errmsg = $env->exception->format($e);
 			foreach ($errmsg as $line) {
-				$env->stderr->write($line);
+				$env->stderr->write(json_encode($line));
 			}
 		}
 	});
@@ -30,7 +30,7 @@ if (!defined("ENV_CONF")) {
 		if ($env = env()) {
 			$errmsg = $env->error->format($errno, $errmsg, $errfile, $errline, $errcontext);
 			foreach ($errmsg as $line) {
-				$env->stderr->write($line);
+				$env->stderr->write(json_encode($line));
 			}
 		}
 	}, E_ALL );
@@ -53,6 +53,11 @@ if (!defined("ENV_CONF")) {
 			$this->src['error'] = new \env\error\error;
 			$this->src['exception'] = new \env\exception\exception;
 			$this->src['stderr'] = new \env\lib\io(new \env\stream\stderr, new \env\format\csv("|"));
+			$this->src['stderr'] = new \env\stream\stderr();
+			$this->stderr->set_maps(
+				//function($line){ if($line_arr=json_decode($line))return implode("|", $line_arr); else return $line },
+				//function($line){ return date("Y-m-d H:i:s", time()) . $line; }
+			);
 		}
 
 		public function __get($name){
